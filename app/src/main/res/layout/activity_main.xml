@@ -3,9 +3,9 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:orientation="vertical"
               android:weightSum="1"
-              tools:context="c.c.MainActivity">
+              tools:context="c.c.MainActivity"
+              android:orientation="vertical">
 
 
     <EditText
@@ -45,5 +45,12 @@
             android:layout_height="match_parent"></TableRow>
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/textStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.05"
+        />
 
 </LinearLayout>
