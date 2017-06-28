@@ -6,23 +6,34 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import org.ksoap2.SoapEnvelope;
+import org.ksoap2.SoapFault;
+import org.ksoap2.serialization.PropertyInfo;
+import org.ksoap2.serialization.SoapObject;
+import org.ksoap2.serialization.SoapSerializationEnvelope;
+import org.ksoap2.transport.HttpTransportSE;
+
+import java.util.ArrayList;
+
+import handler.RemoteCallsImplService.RegisterLoginInfo;
+import handler.RemoteCallsImplService.UserListResult;
+import handler.RemoteCallsImplService.UserListResult;
+import handler.SoapHandler;
+
 public class UserList extends AppCompatActivity
 {
-    private static final String NAMESPACE = "http://ws.server/";
-    private static final String REGISTER = "getUserList";
-    private static final String SOAP_ACTION = "http://egfyz29u.xyz:9999/ws/RemoteCalls";
-    private static String URL = "http://egfyz29u.xyz:9999/ws/RemoteCalls?wsdl";
-
     private static Context context;
-
-    EditText editUserName;
+    ArrayList<String> list;
+    ListView listView;
 
     public static Context getAppContext()
     {
@@ -35,9 +46,7 @@ public class UserList extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.user_list);
 
-        FirebaseMessaging.getInstance().subscribeToTopic("news");
-
-        editUserName = (EditText) findViewById(R.id.editText2);
+        listView = (ListView) findViewById(R.id.ListView);
 
         //set up backend
         UserList.context = getApplicationContext();
@@ -50,6 +59,11 @@ public class UserList extends AppCompatActivity
                 //Log.d(TAG, "Key: " + key + " Value: " + value);
             }
         }
+
+        list = new ArrayList<>();
+
+        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list);
+        listView.setAdapter(adapter);
         sendSOAPRequest();
 
     }
@@ -57,23 +71,93 @@ public class UserList extends AppCompatActivity
 
     public void sendSOAPRequest()
     {
-        new UserList.SendMsg().execute(FirebaseInstanceId.getInstance().getToken());
+        new UserList.SendMsg().execute(FirebaseInstanceId.getInstance().getToken(),
+                "username",
+                "password");
 
     }
 
-    public class SendMsg extends AsyncTask<String, Void, String>
+    public class SendMsg extends AsyncTask<String, Void, UserListResult>
     {
 
         private Exception exception;
 
-        protected String doInBackground(String... urls)
+        @Override
+        protected UserListResult doInBackground(String... params)
         {
-            return null;
+            //Object retObj = SoapHandler.MakeCall(SoapHandler.URL,rli.getSoapEnvelope(),SoapHandler.SOAP_ACTION);
+            SoapObject request = new SoapObject();
+
+            PropertyInfo p1 = new PropertyInfo();
+            p1.name = "key";
+            p1.type = PropertyInfo.STRING_CLASS;
+            p1.setValue(params[0]);
+
+            PropertyInfo p2 = new PropertyInfo();
+            p2.name = "userName";
+            p2.type = PropertyInfo.STRING_CLASS;
+            p2.setValue(params[1]);
+
+            PropertyInfo p3 = new PropertyInfo();
+            p3.name = "password";
+            p3.type = PropertyInfo.STRING_CLASS;
+            p3.setValue(params[2]);
+
+            request.addProperty(p1);
+            request.addProperty(p2);
+            request.addProperty(p3);
+
+            RegisterLoginInfo arg0 = new RegisterLoginInfo(request);
+            return getUserList(arg0);
         }
 
-        protected void onPostExecute(String feed)
+        protected void onPostExecute(UserListResult result)
         {
-            editUserName.setText("");
+            if (null != result)
+            {
+                if ((boolean) result.getProperty(1))
+                {
+                    list.add("yes");
+                }
+            }
         }
+    }
+
+    private UserListResult getUserList(RegisterLoginInfo arg0)
+    {
+        SoapSerializationEnvelope soapEnvelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
+        soapEnvelope.implicitTypes = true;
+        SoapObject soapReq = new SoapObject(SoapHandler.NAMESPACE, SoapHandler.REGISTER);
+        soapEnvelope.addMapping(SoapHandler.NAMESPACE, "arg0", new RegisterLoginInfo().getClass());
+        soapReq.addProperty("arg0", arg0);
+
+        soapEnvelope.setOutputSoapObject(soapReq);
+
+        HttpTransportSE httpTransport = new HttpTransportSE(SoapHandler.URL);
+        try
+        {
+            httpTransport.call(SoapHandler.SOAP_ACTION, soapEnvelope);
+
+            Object retObj = soapEnvelope.bodyIn;
+            if (retObj instanceof SoapFault)
+            {
+                SoapFault fault = (SoapFault) retObj;
+                Exception ex = new Exception(fault.faultstring);
+            } else
+            {
+                SoapObject result = (SoapObject) retObj;
+                if (result.getPropertyCount() > 0)
+                {
+                    Object obj = result.getProperty(0);
+                    SoapObject j = (SoapObject) obj;
+                    UserListResult resultVariable = new UserListResult(j);
+                    return resultVariable;
+                }
+            }
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

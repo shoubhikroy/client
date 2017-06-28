@@ -1,4 +1,4 @@
-package services.intentService;
+package handler.intentService;
 
 
 import android.app.IntentService;
