@@ -127,7 +127,7 @@ public class UserList extends AppCompatActivity
     {
         SoapSerializationEnvelope soapEnvelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
         soapEnvelope.implicitTypes = true;
-        SoapObject soapReq = new SoapObject(SoapHandler.NAMESPACE, SoapHandler.REGISTER);
+        SoapObject soapReq = new SoapObject(SoapHandler.NAMESPACE, SoapHandler.USERLIST);
         soapEnvelope.addMapping(SoapHandler.NAMESPACE, "arg0", new RegisterLoginInfo().getClass());
         soapReq.addProperty("arg0", arg0);
 
