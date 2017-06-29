@@ -94,7 +94,7 @@ public class UserList extends AppCompatActivity
                     for (int i = 0; i < result.userlist.size(); i++)
                     {
                         bUser bU = result.userlist.get(i);
-                        list.add("userid: " + bU.userid + " username: " + bU.username + " online: " + bU.online + " gamesActive: " + bU.gameActive);
+                        list.add("userid: " + bU.userid + " |username: " + bU.username + " |online: " + bU.online + " |gamesActive: " + bU.gameActive);
                     }
                     listView.setAdapter(new ArrayAdapter(UserList.this, android.R.layout.simple_list_item_1, list));
                 }
