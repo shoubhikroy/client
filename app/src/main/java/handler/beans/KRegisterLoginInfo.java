@@ -1,4 +1,4 @@
-package handler.RemoteCallsImplService;
+package handler.beans;
 
 //------------------------------------------------------------------------------
 // <wsdl2code-generated>
@@ -18,18 +18,18 @@ import java.util.Hashtable;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapPrimitive;
 
-public class RegisterLoginResult implements KvmSerializable
+public class KRegisterLoginInfo implements KvmSerializable
 {
     
     public String key;
-    public boolean successFlag;
-    public String message;
+    public String userName;
+    public String password;
 
-    public RegisterLoginResult()
+    public KRegisterLoginInfo()
     {
     }
-    
-    public RegisterLoginResult(SoapObject soapObject)
+
+    public KRegisterLoginInfo(SoapObject soapObject)
     {
         if (soapObject == null)
             return;
@@ -45,28 +45,28 @@ public class RegisterLoginResult implements KvmSerializable
                 key = (String) obj;
             }
         }
-        if (soapObject.hasProperty("successFlag"))
+        if (soapObject.hasProperty("userName"))
         {
-            Object obj = soapObject.getProperty("successFlag");
+            Object obj = soapObject.getProperty("userName");
             if (obj != null && obj.getClass().equals(SoapPrimitive.class))
             {
                 SoapPrimitive j = (SoapPrimitive) obj;
-                successFlag = Boolean.parseBoolean(j.toString());
-            } else if (obj != null && obj instanceof Boolean)
-            {
-                successFlag = (Boolean) obj;
-            }
-        }
-        if (soapObject.hasProperty("message"))
-        {
-            Object obj = soapObject.getProperty("message");
-            if (obj != null && obj.getClass().equals(SoapPrimitive.class))
-            {
-                SoapPrimitive j = (SoapPrimitive) obj;
-                message = j.toString();
+                userName = j.toString();
             } else if (obj != null && obj instanceof String)
             {
-                message = (String) obj;
+                userName = (String) obj;
+            }
+        }
+        if (soapObject.hasProperty("password"))
+        {
+            Object obj = soapObject.getProperty("password");
+            if (obj != null && obj.getClass().equals(SoapPrimitive.class))
+            {
+                SoapPrimitive j = (SoapPrimitive) obj;
+                password = j.toString();
+            } else if (obj != null && obj instanceof String)
+            {
+                password = (String) obj;
             }
         }
     }
@@ -78,9 +78,9 @@ public class RegisterLoginResult implements KvmSerializable
             case 0:
                 return key;
             case 1:
-                return successFlag;
+                return userName;
             case 2:
-                return message;
+                return password;
         }
         return null;
     }
@@ -101,12 +101,12 @@ public class RegisterLoginResult implements KvmSerializable
                 info.name = "key";
                 break;
             case 1:
-                info.type = PropertyInfo.BOOLEAN_CLASS;
-                info.name = "successFlag";
+                info.type = PropertyInfo.STRING_CLASS;
+                info.name = "userName";
                 break;
             case 2:
                 info.type = PropertyInfo.STRING_CLASS;
-                info.name = "message";
+                info.name = "password";
                 break;
         }
     }

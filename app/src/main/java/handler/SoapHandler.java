@@ -1,8 +1,11 @@
 package handler;
 
+import org.ksoap2.SoapFault;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
+
+import handler.beans.RegisterLoginResult;
 
 public class SoapHandler
 {
@@ -12,18 +15,30 @@ public class SoapHandler
     public static final String REGISTER = "registerLogin";
     public static final String USERLIST = "getUserList";
 
-    public static SoapObject MakeCall(String URL, SoapSerializationEnvelope Envelope, String SOAP_ACTION)
+    public static SoapObject MakeCall(String URL, SoapSerializationEnvelope envelope, String SOAP_ACTION)
     {
         HttpTransportSE androidHttpTransport = new HttpTransportSE(URL);
         try
         {
-            androidHttpTransport.call(SOAP_ACTION, Envelope);
-            SoapObject response = (SoapObject) Envelope.getResponse();
-            return response;
+            androidHttpTransport.call(SOAP_ACTION, envelope);
+            Object retObj = envelope.bodyIn;
+            if (retObj instanceof SoapFault)
+            {
+                SoapFault fault = (SoapFault) retObj;
+                Exception ex = new Exception(fault.faultstring);
+            } else
+            {
+                SoapObject result = (SoapObject) retObj;
+                if (result.getPropertyCount() > 0)
+                {
+                    Object obj = result.getProperty(0);
+                    SoapObject j = (SoapObject) obj;
+                    return j;
+                }
+            }
         } catch (Exception e)
         {
             e.printStackTrace();
-
         }
         return null;
     }

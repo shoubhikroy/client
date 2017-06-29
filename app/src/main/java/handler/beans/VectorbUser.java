@@ -1,4 +1,4 @@
-package handler.RemoteCallsImplService;
+package handler.beans;
 
 //------------------------------------------------------------------------------
 // <wsdl2code-generated>
@@ -16,7 +16,7 @@ import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
 import java.util.Hashtable;
 import org.ksoap2.serialization.SoapObject;
-import org.ksoap2.serialization.SoapPrimitive;
+
 import java.util.Vector;
 
 public class VectorbUser extends Vector<bUser> implements KvmSerializable

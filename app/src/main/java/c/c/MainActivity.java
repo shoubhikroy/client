@@ -13,7 +13,6 @@ import android.widget.TextView;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import org.ksoap2.HeaderProperty;
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.SoapFault;
 import org.ksoap2.serialization.PropertyInfo;
@@ -21,11 +20,10 @@ import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
 
-import java.util.List;
-
-import handler.RemoteCallsImplService.RegisterLoginInfo;
-import handler.RemoteCallsImplService.RegisterLoginResult;
+import handler.beans.KRegisterLoginInfo;
+import handler.beans.RegisterLoginResult;
 import handler.SoapHandler;
+import handler.beans.input.RegisterLoginInfo;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -92,37 +90,18 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected RegisterLoginResult doInBackground(String... params)
         {
-            //Object retObj = SoapHandler.MakeCall(SoapHandler.URL,rli.getSoapEnvelope(),SoapHandler.SOAP_ACTION);
-            SoapObject request = new SoapObject();
-
-            PropertyInfo p1 = new PropertyInfo();
-            p1.name = "key";
-            p1.type = PropertyInfo.STRING_CLASS;
-            p1.setValue(params[0]);
-
-            PropertyInfo p2 = new PropertyInfo();
-            p2.name = "userName";
-            p2.type = PropertyInfo.STRING_CLASS;
-            p2.setValue(params[1]);
-
-            PropertyInfo p3 = new PropertyInfo();
-            p3.name = "password";
-            p3.type = PropertyInfo.STRING_CLASS;
-            p3.setValue(params[2]);
-
-            request.addProperty(p1);
-            request.addProperty(p2);
-            request.addProperty(p3);
-
-            RegisterLoginInfo arg0 = new RegisterLoginInfo(request);
-            return registerLogin(arg0);
+            RegisterLoginInfo rli = new RegisterLoginInfo(params, SoapHandler.REGISTER);
+            SoapObject j = SoapHandler.MakeCall(SoapHandler.URL, rli.getSoapEnvelope(), SoapHandler.SOAP_ACTION);
+            if (null != j)
+                return new RegisterLoginResult(j);
+            return null;
         }
 
         protected void onPostExecute(RegisterLoginResult result)
         {
             if (null != result)
             {
-                if ((boolean) result.getProperty(1))
+                if (result.successFlag)
                 {
                     Intent intent = new Intent(MainActivity.this, UserList.class);
                     startActivity(intent);
@@ -135,43 +114,5 @@ public class MainActivity extends AppCompatActivity
                 textStatus.setText("cannot contact server, its probably down");
             }
         }
-    }
-
-    public RegisterLoginResult registerLogin(RegisterLoginInfo arg0)
-    {
-        SoapSerializationEnvelope soapEnvelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
-        soapEnvelope.implicitTypes = true;
-        SoapObject soapReq = new SoapObject(SoapHandler.NAMESPACE, SoapHandler.REGISTER);
-        soapEnvelope.addMapping(SoapHandler.NAMESPACE, "arg0", new RegisterLoginInfo().getClass());
-        soapReq.addProperty("arg0", arg0);
-
-        soapEnvelope.setOutputSoapObject(soapReq);
-
-        HttpTransportSE httpTransport = new HttpTransportSE(SoapHandler.URL);
-        try
-        {
-            httpTransport.call(SoapHandler.SOAP_ACTION, soapEnvelope);
-
-            Object retObj = soapEnvelope.bodyIn;
-            if (retObj instanceof SoapFault)
-            {
-                SoapFault fault = (SoapFault) retObj;
-                Exception ex = new Exception(fault.faultstring);
-            } else
-            {
-                SoapObject result = (SoapObject) retObj;
-                if (result.getPropertyCount() > 0)
-                {
-                    Object obj = result.getProperty(0);
-                    SoapObject j = (SoapObject) obj;
-                    RegisterLoginResult resultVariable = new RegisterLoginResult(j);
-                    return resultVariable;
-                }
-            }
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        return null;
     }
 }
