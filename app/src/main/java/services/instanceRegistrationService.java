@@ -1,11 +1,11 @@
-package handler;
+package services;
 
 import android.content.Intent;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
-import handler.intentService.NetstatService;
+import services.intentService.NetstatService;
 
 
 public class instanceRegistrationService extends FirebaseInstanceIdService
