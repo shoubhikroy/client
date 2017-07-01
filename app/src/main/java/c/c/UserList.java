@@ -24,6 +24,8 @@ import handler.beans.UserListResult;
 import handler.SoapHandler;
 import handler.beans.bUser;
 import handler.beans.input.RegisterLoginInfo;
+import model.objectManagers.SettingsManager;
+import model.objects.Setting;
 
 public class UserList extends AppCompatActivity
 {
@@ -64,10 +66,11 @@ public class UserList extends AppCompatActivity
 
     public void sendSOAPRequest()
     {
+        SettingsManager sM = SettingsManager.getInstance();
+        Setting loginInfo = sM.getSettingFromKey("loginInfo");
         new UserList.SendMsg().execute(FirebaseInstanceId.getInstance().getToken(),
-                "username",
-                "password");
-
+                loginInfo.getValue(),
+                loginInfo.getValue2());
     }
 
     public class SendMsg extends AsyncTask<String, Void, UserListResult>

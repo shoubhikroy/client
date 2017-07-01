@@ -24,6 +24,7 @@ import handler.beans.KRegisterLoginInfo;
 import handler.beans.RegisterLoginResult;
 import handler.SoapHandler;
 import handler.beans.input.RegisterLoginInfo;
+import model.objectManagers.SettingsManager;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -86,10 +87,14 @@ public class MainActivity extends AppCompatActivity
     {
 
         private Exception exception;
+        String username;
+        String password;
 
         @Override
         protected RegisterLoginResult doInBackground(String... params)
         {
+            username = params[1];
+            password = params[2];
             RegisterLoginInfo rli = new RegisterLoginInfo(params, SoapHandler.REGISTER);
             SoapObject j = SoapHandler.MakeCall(SoapHandler.URL, rli.getSoapEnvelope(), SoapHandler.SOAP_ACTION);
             if (null != j)
@@ -103,11 +108,13 @@ public class MainActivity extends AppCompatActivity
             {
                 if (result.successFlag)
                 {
+                    SettingsManager sM = SettingsManager.getInstance();
+                    sM.createSetting("loginInfo", username, password, null);
                     Intent intent = new Intent(MainActivity.this, UserList.class);
                     startActivity(intent);
                 } else
                 {
-                    textStatus.setText("invalid user/pass combo");
+                    textStatus.setText("invalid Setting/pass combo");
                 }
             } else
             {

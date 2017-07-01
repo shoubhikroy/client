@@ -9,8 +9,8 @@ import handler.beans.RegisterLoginResult;
 
 public class SoapHandler
 {
-    public static final String SOAP_ACTION = "http://71.190.149.193:9999/ws/rpc";
-    public static String URL = "http://71.190.149.193:9999/ws/rpc?wsdl";
+    public static final String SOAP_ACTION = "http://egfyz29u.xyz:9999/ws/rpc";
+    public static String URL = "http://egfyz29u.xyz:9999/ws/rpc?wsdl";
     public static final String NAMESPACE = "http://jaxws.server/";
     public static final String REGISTER = "registerLogin";
     public static final String USERLIST = "getUserList";
