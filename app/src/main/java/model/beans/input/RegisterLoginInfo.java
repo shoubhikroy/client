@@ -1,4 +1,4 @@
-package handler.beans.input;
+package model.beans.input;
 
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.PropertyInfo;
@@ -6,7 +6,7 @@ import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 
 import handler.SoapHandler;
-import handler.beans.KRegisterLoginInfo;
+import model.beans.KRegisterLoginInfo;
 
 public class RegisterLoginInfo
 {

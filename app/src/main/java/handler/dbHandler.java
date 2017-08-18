@@ -3,7 +3,7 @@ package handler;
 import java.io.*;
 import java.util.HashMap;
 
-import c.c.MainActivity;
+import c.c.Activities.MainActivity;
 import model.objectManagers.SettingsManager;
 import model.objects.Setting;
 

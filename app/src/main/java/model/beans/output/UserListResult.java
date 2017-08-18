@@ -1,4 +1,4 @@
-package handler.beans;
+package model.beans.output;
 
 //------------------------------------------------------------------------------
 // <wsdl2code-generated>
@@ -21,69 +21,64 @@ import java.util.Hashtable;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapPrimitive;
 
-public class bUser implements KvmSerializable
+import model.beans.VectorbUser;
+
+public class UserListResult implements KvmSerializable
 {
 
-    public String username;
-    public int userid;
-    public boolean online;
-    public boolean gameActive;
+    public String key;
+    public boolean successFlag;
+    public String message;
+    public VectorbUser userlist;
 
-    public bUser()
+    public UserListResult()
     {
     }
 
-    public bUser(SoapObject soapObject)
+    public UserListResult(SoapObject soapObject)
     {
         if (soapObject == null)
             return;
-        if (soapObject.hasProperty("username"))
+        if (soapObject.hasProperty("key"))
         {
-            Object obj = soapObject.getProperty("username");
+            Object obj = soapObject.getProperty("key");
             if (obj != null && obj.getClass().equals(SoapPrimitive.class))
             {
                 SoapPrimitive j = (SoapPrimitive) obj;
-                username = j.toString();
+                key = j.toString();
             } else if (obj != null && obj instanceof String)
             {
-                username = (String) obj;
+                key = (String) obj;
             }
         }
-        if (soapObject.hasProperty("userid"))
+        if (soapObject.hasProperty("successFlag"))
         {
-            Object obj = soapObject.getProperty("userid");
+            Object obj = soapObject.getProperty("successFlag");
             if (obj != null && obj.getClass().equals(SoapPrimitive.class))
             {
                 SoapPrimitive j = (SoapPrimitive) obj;
-                userid = Integer.parseInt(j.toString());
-            } else if (obj != null && obj instanceof Number)
-            {
-                userid = (Integer) obj;
-            }
-        }
-        if (soapObject.hasProperty("online"))
-        {
-            Object obj = soapObject.getProperty("online");
-            if (obj != null && obj.getClass().equals(SoapPrimitive.class))
-            {
-                SoapPrimitive j = (SoapPrimitive) obj;
-                online = Boolean.parseBoolean(j.toString());
+                successFlag = Boolean.parseBoolean(j.toString());
             } else if (obj != null && obj instanceof Boolean)
             {
-                online = (Boolean) obj;
+                successFlag = (Boolean) obj;
             }
         }
-        if (soapObject.hasProperty("gameActive"))
+        if (soapObject.hasProperty("message"))
         {
-            Object obj = soapObject.getProperty("gameActive");
+            Object obj = soapObject.getProperty("message");
             if (obj != null && obj.getClass().equals(SoapPrimitive.class))
             {
                 SoapPrimitive j = (SoapPrimitive) obj;
-                gameActive = Boolean.parseBoolean(j.toString());
-            } else if (obj != null && obj instanceof Boolean)
+                message = j.toString();
+            } else if (obj != null && obj instanceof String)
             {
-                gameActive = (Boolean) obj;
+                message = (String) obj;
             }
+        }
+        if (soapObject.hasProperty("userlist"))
+        {
+            SoapObject j = (SoapObject) soapObject.getProperty("userlist");
+            userlist = new VectorbUser(j);
         }
     }
 
@@ -93,13 +88,13 @@ public class bUser implements KvmSerializable
         switch (arg0)
         {
             case 0:
-                return username;
+                return key;
             case 1:
-                return userid;
+                return successFlag;
             case 2:
-                return online;
+                return message;
             case 3:
-                return gameActive;
+                return userlist;
         }
         return null;
     }
@@ -117,19 +112,19 @@ public class bUser implements KvmSerializable
         {
             case 0:
                 info.type = PropertyInfo.STRING_CLASS;
-                info.name = "username";
+                info.name = "key";
                 break;
             case 1:
-                info.type = PropertyInfo.INTEGER_CLASS;
-                info.name = "userid";
+                info.type = PropertyInfo.BOOLEAN_CLASS;
+                info.name = "successFlag";
                 break;
             case 2:
-                info.type = PropertyInfo.BOOLEAN_CLASS;
-                info.name = "online";
+                info.type = PropertyInfo.STRING_CLASS;
+                info.name = "message";
                 break;
             case 3:
-                info.type = PropertyInfo.BOOLEAN_CLASS;
-                info.name = "gameActive";
+                info.type = PropertyInfo.VECTOR_CLASS;
+                info.name = "userlist";
                 break;
         }
     }

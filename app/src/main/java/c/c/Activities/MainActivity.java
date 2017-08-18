@@ -1,32 +1,25 @@
-package c.c;
+package c.c.Activities;
+
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.messaging.FirebaseMessaging;
-
-import org.ksoap2.SoapEnvelope;
-import org.ksoap2.SoapFault;
-import org.ksoap2.serialization.PropertyInfo;
-import org.ksoap2.serialization.SoapObject;
-import org.ksoap2.serialization.SoapSerializationEnvelope;
-import org.ksoap2.transport.HttpTransportSE;
-
-import handler.beans.KRegisterLoginInfo;
-import handler.beans.RegisterLoginResult;
-import handler.SoapHandler;
-import handler.beans.input.RegisterLoginInfo;
+import c.c.Fragments.RegisterLoginFragment;
+import c.c.R;
+import model.beans.output.RegisterLoginResult;
+import model.templates.SoapCallBack;
 import model.objectManagers.SettingsManager;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends AppCompatActivity implements SoapCallBack<RegisterLoginResult>
 {
     private static Context context;
 
@@ -39,19 +32,19 @@ public class MainActivity extends AppCompatActivity
         return MainActivity.context;
     }
 
+    private RegisterLoginFragment mRegisterLoginFragment;
+    private boolean mDownloading = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FirebaseMessaging.getInstance().subscribeToTopic("news");
-
         editUserName = (EditText) findViewById(R.id.editUserName);
         editPassword = (EditText) findViewById(R.id.editText);
         textStatus = (TextView) findViewById(R.id.textStatus);
 
-        //set up backend
         MainActivity.context = getApplicationContext();
 
         if (getIntent().getExtras() != null)
@@ -62,28 +55,92 @@ public class MainActivity extends AppCompatActivity
                 //Log.d(TAG, "Key: " + key + " Value: " + value);
             }
         }
+        mRegisterLoginFragment = RegisterLoginFragment.getInstance(getSupportFragmentManager());
+
         Button buttonLogin = (Button) findViewById(R.id.buttonLogin);
         buttonLogin.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                sendSOAPRequest();
+/*                sendSOAPRequest();*/
+                String params[] = {
+                        editUserName.getText().toString().isEmpty() ? "empty" : editUserName.getText().toString(),
+                        editPassword.getText().toString().isEmpty() ? "empty" : editPassword.getText().toString()
+                };
 
+
+                startDownload(params[0], params[1]);
             }
         });
     }
 
+    private void startDownload(String username, String password)
+    {
+        if (!mDownloading && mRegisterLoginFragment != null)
+        {
+            // Execute the async download.
+            mRegisterLoginFragment.startDownload(username, password);
+            mDownloading = true;
+        }
+    }
 
-    public void sendSOAPRequest()
+    @Override
+    public void updateFromDownload(RegisterLoginResult result)
+    {
+        // Update your UI here based on result of download.
+        if (null != result)
+        {
+            if (result.successFlag)
+            {
+                SettingsManager sM = SettingsManager.getInstance();
+                //STORE RLI as a global??
+                sM.createSetting(
+                        "loginInfo",
+                        editUserName.getText().toString().isEmpty() ? "empty" : editUserName.getText().toString(),
+                        editPassword.getText().toString().isEmpty() ? "empty" : editPassword.getText().toString(),
+                        null
+                );
+                Intent intent = new Intent(MainActivity.this, UserList.class);
+                startActivity(intent);
+            } else
+            {
+                textStatus.setText("invalid Setting/pass combo");
+            }
+        } else
+        {
+            textStatus.setText("cannot contact server, its probably down");
+        }
+    }
+
+    @Override
+    public NetworkInfo getActiveNetworkInfo()
+    {
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo;
+    }
+
+    @Override
+    public void finishDownloading()
+    {
+        mDownloading = false;
+        if (mRegisterLoginFragment != null)
+        {
+            mRegisterLoginFragment.cancelDownload();
+        }
+    }
+
+
+/*    public void sendSOAPRequest()
     {
         new SendMsg().execute(FirebaseInstanceId.getInstance().getToken(),
                 editUserName.getText().toString().isEmpty() ? "empty" : editUserName.getText().toString(),
                 editPassword.getText().toString().isEmpty() ? "empty" : editPassword.getText().toString());
+    }*/
 
-    }
-
-    public class SendMsg extends AsyncTask<String, Void, RegisterLoginResult>
+/*    public class SendMsg extends AsyncTask<String, Void, RegisterLoginResult>
     {
 
         private Exception exception;
@@ -121,5 +178,5 @@ public class MainActivity extends AppCompatActivity
                 textStatus.setText("cannot contact server, its probably down");
             }
         }
-    }
+    }*/
 }

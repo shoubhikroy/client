@@ -5,8 +5,6 @@ import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
 
-import handler.beans.RegisterLoginResult;
-
 public class SoapHandler
 {
     public static final String SOAP_ACTION = "http://71.190.149.193:9999/ws/rpc";

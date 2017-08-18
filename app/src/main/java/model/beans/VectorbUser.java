@@ -1,4 +1,4 @@
-package handler.beans;
+package model.beans;
 
 //------------------------------------------------------------------------------
 // <wsdl2code-generated>
