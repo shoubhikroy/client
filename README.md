@@ -11,3 +11,8 @@ handle rpc timeouts<br>
 post login menu (slideout?)<br>
 better ui struture<br>
 remove all the bulky soap beans and replace iwth json objects<br>
+
+For now implement game with blank cards. Cards should load data from a json file following specs: https://mtgjson.com/
+The idea here is that the client/server should handle any cards as long as the two clients playing each other have hte same pool of cards they made the deck from.
+clients should be able to load a huge set of cards from a massive json, then make a deck to their own rules. games can follow any rules as long as the table allows them to arrange cards accordingly.
+hash and compare the cards to make sure client/client have the same set of cards.
